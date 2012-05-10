@@ -1,0 +1,2 @@
+# cat=basic/flow3Directory; type=string; label=FLOW3 Base Directory
+flow3Directory = /path/to/flow3/basedirectory
