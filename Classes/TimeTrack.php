@@ -23,6 +23,8 @@ class Tx_SandstormmediaPlumber_TimeTrack {
 		'Parse template' => 'Template: Parse',
 
 		'Get Page from cache' => 'Cache: Get Page from cache',
+		'Cache Row' => 'Cache: Cache Row',
+		'Cache Query' => 'Cache: Cache Query',
 
 		'Setting the config-array' => 'Page Generation: Prepare (set config array)',
 		'Setting language and locale' => 'Page Generation: Prepare (set language and locale)',
@@ -31,6 +33,12 @@ class Tx_SandstormmediaPlumber_TimeTrack {
 		'pagegen.php, render' => 'Page Generation: render',
 		'page' => 'Page Generation: render PAGE object',
 
+		'Stat' => 'Print Content: Stat',
+
+		'Include libraries' => 'Non-cached objects: Include Libraries',
+		'Split content' => 'Non-cached objects: Split content',
+		'Substitute header section' => 'Non-cached objects: Substitute header section',
+		'substituteMarkerArrayCached' => 'Non-cached objects: substituteMarkerArrayCached',
 
 	);
 
@@ -102,6 +110,7 @@ class Tx_SandstormmediaPlumber_TimeTrack {
 	 * @return	void
 	 */
 	public function setTSlogMessage($content, $num = 0) {
+		$this->run->timestamp($content, array('c' => $content));
 	}
 
 	/**

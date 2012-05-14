@@ -48,7 +48,7 @@ class Tx_SandstormmediaPlumber_Hook implements t3lib_Singleton, t3lib_DB_preProc
 
 
 	public function INSERTquery_preProcessAction(&$table, array &$fieldsValues, &$noQuoteFields, t3lib_DB $parentObject) {
-		if ($this->run) $this->run->startTimer('DB: INSERT', array('Table' => $table));
+		if ($this->run) $this->run->startTimer('DB: INSERT', array('Table' => $table, 'fields' => json_encode($fieldsValues)));
 	}
 
 	public function exec_INSERTquery_postProcessAction(&$table, array &$fieldsValues, &$noQuoteFields, t3lib_DB $parentObject) {
@@ -64,7 +64,7 @@ class Tx_SandstormmediaPlumber_Hook implements t3lib_Singleton, t3lib_DB_preProc
 	}
 
 	public function UPDATEquery_preProcessAction(&$table, &$where, array &$fieldsValues, &$noQuoteFields, t3lib_DB $parentObject) {
-		if ($this->run) $this->run->startTimer('DB: UPDATE', array('Table' => $table));
+		if ($this->run) $this->run->startTimer('DB: UPDATE', array('Table' => $table, 'where' => $where, 'fields' => json_encode($fieldsValues)));
 	}
 
 	public function exec_UPDATEquery_postProcessAction(&$table, &$where, array &$fieldsValues, &$noQuoteFields, t3lib_DB $parentObject) {
