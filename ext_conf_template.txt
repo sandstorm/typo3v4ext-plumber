@@ -1,2 +1,5 @@
-# cat=basic/flow3Directory; type=string; label=FLOW3 Base Directory
-flow3Directory = /path/to/flow3/basedirectory
+# cat=basic/profiler; type=string; label=Directory where the logs are stored; should be the "Data/Logs/Profiles" folder of the FLOW3 distribution
+profileDirectory = /path/to/flow3/basedirectory/Data/Logs/Profiles/
+
+# cat=basic/profiler; type=string; label=Sampling Rate, between 0 and 1 -- the percentage of requests being sampled;
+samplingRate = 1

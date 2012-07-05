@@ -11,12 +11,17 @@ class Tx_SandstormmediaPlumber_Hook implements t3lib_Singleton, t3lib_DB_preProc
 
 	public function __construct() {
 		$_extConfig = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['sandstormmedia_plumber']);
-		$this->flow3BaseDirectory = $_extConfig['flow3Directory'];
+		$samplingRate = 1;
+		if (isset($_extConfig['samplingRate'])) {
+			$samplingRate = floatval($_extConfig['samplingRate']);
+		}
 
-		$this->profileDirectory = $this->flow3BaseDirectory . '/Data/Logs/Profiles';
+		$currentSampleValue = mt_rand() / mt_getrandmax();
 
-		$mainIncludeFile = $this->flow3BaseDirectory . '/Packages/Application/SandstormMedia.PhpProfiler/main.php';
-		if(file_exists($mainIncludeFile)) {
+		if (isset($_extConfig['profileDirectory']) && $currentSampleValue <= $samplingRate) {
+			$this->profileDirectory = $_extConfig['profileDirectory'];
+
+			$mainIncludeFile = __DIR__ . '/../Resources/Private/PHP/PhpProfiler/main.php';
 			require_once($mainIncludeFile);
 
 			$this->run = new \SandstormMedia\PhpProfiler\Domain\Model\EmptyProfilingRun();
