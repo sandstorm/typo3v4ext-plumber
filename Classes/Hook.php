@@ -35,6 +35,8 @@ class Tx_SandstormmediaPlumber_Hook implements t3lib_Singleton, t3lib_DB_preProc
 			$this->profiler = $profiler;
 			$this->run = $profiler->start();
 
+			$this->run->setOption('requestUri', t3lib_div::getIndpEnv('REQUEST_URI'));
+
 			require('TimeTrack.php');
 			$GLOBALS['TT'] = new Tx_SandstormmediaPlumber_TimeTrack($this->run);
 		}
