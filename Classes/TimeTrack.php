@@ -17,7 +17,7 @@ class Tx_SandstormmediaPlumber_TimeTrack {
 		'fetch_the_id domain/' => 'Page ID: domain/',
 		'fetch_the_id rootLine/' => 'Page ID: rootLine/',
 
-		'Get Compressed TC array' => 'TypoScript: Get Compressed TC Array',
+		'Get Compressed TC array' => 'TCA: Load compressed TCA array',
 
 		'Start Template' => 'Template: Start',
 		'Parse template' => 'Template: Parse',
@@ -39,11 +39,18 @@ class Tx_SandstormmediaPlumber_TimeTrack {
 		'Split content' => 'Non-cached objects: Split content',
 		'Substitute header section' => 'Non-cached objects: Substitute header section',
 		'substituteMarkerArrayCached' => 'Non-cached objects: substituteMarkerArrayCached',
-
 	);
+
+	protected $additionalCallbacks = array();
 
 	public function __construct($run) {
 		$this->run = $run;
+
+		$this->additionalCallbacks = array(
+			'Process ID' => function($run) {
+				$run->setOption('beUserLoggedIn', ($GLOBALS['TSFE']->isBackendUserLoggedIn()?'TRUE' : 'FALSE'));
+			}
+		);
 	}
 
 	/**
@@ -73,7 +80,15 @@ class Tx_SandstormmediaPlumber_TimeTrack {
 		}
 
 		$this->tsLabelStack[] = $timerIdentifier;
-		$this->run->startTimer($timerIdentifier, array('value' => $value));
+		$values = array('value' => $value);
+
+		if (isset($this->additionalCallbacks[$tslabel])) {
+			$callback = $this->additionalCallbacks[$tslabel];
+			$callback($this->run);
+		}
+
+		$this->run->startTimer($timerIdentifier, $values);
+
 	}
 
 	/**
