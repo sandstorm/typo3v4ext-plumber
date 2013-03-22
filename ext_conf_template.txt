@@ -3,3 +3,6 @@ profileDirectory = /path/to/flow3/basedirectory/Data/Logs/Profiles/
 
 # cat=basic/profiler; type=string; label=Sampling Rate, between 0 and 1 -- the percentage of requests being sampled;
 samplingRate = 1
+
+# cat=basic/profiler; type=string; label=Name of xclass to replace t3lib/class.t3lib_db.php. If empty, no xclass will be used;
+t3libDbXclass = sandstormmedia_plumber::Classes/Xclass/ux_t3lib_DB.php

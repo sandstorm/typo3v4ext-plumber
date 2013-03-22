@@ -1,5 +1,5 @@
 <?php
-namespace SandstormMedia\PhpProfiler;
+namespace Sandstorm\PhpProfiler;
 
 /*                                                                        *
  * This script belongs to the FLOW3 package "SandstormMedia.PhpProfiler". *
@@ -47,7 +47,7 @@ class Profiler {
 	}
 
 	/**
-	 * @return \SandstormMedia\PhpProfiler\Profiler
+	 * @return \Sandstorm\PhpProfiler\Profiler
 	 * @api
 	 */
 	public static function getInstance() {
@@ -74,7 +74,7 @@ class Profiler {
 	/**
 	 * Start a profiling run and return the run instance.
 	 *
-	 * @return \SandstormMedia\PhpProfiler\Domain\Model\ProfilingRun
+	 * @return \Sandstorm\PhpProfiler\Domain\Model\ProfilingRun
 	 * @api
 	 */
 	public function start() {
@@ -89,7 +89,7 @@ class Profiler {
 	/**
 	 * Get the current profiling run.
 	 *
-	 * @return \SandstormMedia\PhpProfiler\Domain\Model\ProfilingRun
+	 * @return \Sandstorm\PhpProfiler\Domain\Model\ProfilingRun
 	 */
 	public function getRun() {
 		if ($this->currentlyRunningProfilingRun === NULL) {
@@ -112,7 +112,7 @@ class Profiler {
 	/**
 	 * Stop a profiling run if one is running, and return it.
 	 *
-	 * @return \SandstormMedia\PhpProfiler\Domain\Model\ProfilingRun the profiling run or NULL if none is running
+	 * @return \Sandstorm\PhpProfiler\Domain\Model\ProfilingRun the profiling run or NULL if none is running
 	 */
 	public function stop() {
 		if (!$this->currentlyRunningProfilingRun) return;
@@ -135,4 +135,3 @@ class Profiler {
 		$run->save($filename);
 	}
 }
-?>

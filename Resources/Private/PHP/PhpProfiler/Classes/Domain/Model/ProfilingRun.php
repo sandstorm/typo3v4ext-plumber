@@ -1,5 +1,5 @@
 <?php
-namespace SandstormMedia\PhpProfiler\Domain\Model;
+namespace Sandstorm\PhpProfiler\Domain\Model;
 
 /*                                                                        *
  * This script belongs to the FLOW3 package "SandstormMedia.PhpProfiler". *
