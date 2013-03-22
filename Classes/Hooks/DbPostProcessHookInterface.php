@@ -25,6 +25,10 @@
 ***************************************************************/
 
 
+// We probably have no autoloading
+require_once(PATH_site . '/t3lib/interfaces/interface.t3lib_db_postprocessqueryhook.php');
+
+
 /**
  * Interface for a post process hook for data base queries.
  *

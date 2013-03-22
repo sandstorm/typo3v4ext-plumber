@@ -25,6 +25,10 @@
 ***************************************************************/
 
 
+// We probably have no autoloading
+require_once(PATH_site . '/t3lib/class.t3lib_db.php');
+
+
 /**
  * X-Class implementation of the t3lib_DB class.
  *
