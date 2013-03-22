@@ -26,7 +26,7 @@
 
 
 // We probably have no autoloading
-require_once(PATH_site . '/t3lib/class.t3lib_db.php');
+require_once(PATH_site . 't3lib/class.t3lib_db.php');
 
 
 /**
