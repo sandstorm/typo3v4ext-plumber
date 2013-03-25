@@ -88,8 +88,16 @@ function __includeXClassForCurrentT3Version() {
 	$t3version = __getT3Version();
 	if ($t3version < 4006000) {  // Version < 4.6
 		$xclass = t3lib_extMgm::extPath('sandstormmedia_plumber') . 'Classes/Xclass/ux_t3lib_DB_4.5.php';
+
+		// Inclusion of required interfaces (those are not available in v 4.5)
+		require_once( t3lib_extMgm::extPath('sandstormmedia_plumber') . 'Classes/Hooks/v4.5Compatibility/interface.t3lib_db_postprocessqueryhook.php');
+		require_once( t3lib_extMgm::extPath('sandstormmedia_plumber') . 'Classes/Hooks/v4.5Compatibility/interface.t3lib_db_preprocessqueryhook.php');
 	} else {   // Version >= 4.6
 		$xclass = t3lib_extMgm::extPath('sandstormmedia_plumber') . 'Classes/Xclass/ux_t3lib_DB_4.6.php';
+
+		// Inclusion of required interfaces (we probably have no auto-loading)
+		require_once(PATH_site . 't3lib/interfaces/interface.t3lib_db_postprocessqueryhook.php');
+		require_once(PATH_site . 't3lib/interfaces/interface.t3lib_db_preprocessqueryhook.php');
 	}
 	$GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['t3lib/class.t3lib_db.php'] = $xclass;
 }

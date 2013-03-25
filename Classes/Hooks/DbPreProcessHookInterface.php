@@ -25,10 +25,6 @@
 ***************************************************************/
 
 
-// We probably have no autoloading
-require_once(PATH_site . 't3lib/interfaces/interface.t3lib_db_preprocessqueryhook.php');
-
-
 /**
  * Interface for a pre process hook for data base queries.
  *
