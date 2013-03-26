@@ -4,5 +4,8 @@ profileDirectory = /path/to/flow3/basedirectory/Data/Logs/Profiles/
 # cat=basic/profiler; type=string; label=Sampling Rate, between 0 and 1 -- the percentage of requests being sampled;
 samplingRate = 1
 
-# cat=basic/profiler; type=string; label=Name of xclass to replace t3lib/class.t3lib_db.php. If empty, no xclass will be used. EXT_KEY::path/inside/extension to specify the path;
+# cat=basic/profiler; type=boolean; label=Use t3lib_DB x-classing. If activated, the t3lib_DB is x-classed, adding some hooks for profiling;
+t3libDbXclassingActivated = 0
+
+# cat=basic/profiler; type=string; label=Name of xclass to replace t3lib/class.t3lib_db.php. If empty, no xclass will be used. EXT_KEY__TWO COLONS__path/inside/extension to specify the path;
 t3libDbXclass =

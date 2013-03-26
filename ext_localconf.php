@@ -6,8 +6,8 @@ if (!defined ("TYPO3_MODE"))    die ("Access denied.");
 
 // Determine, which x-class for t3lib_DB should be used for this T3 version.
 $xClassFromEmSettings = __getXClassFromEmSettings();
-if ($xClassFromEmSettings) {
-	$GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['t3lib/class.t3lib_db.php'] = $xClassFromEmSettings;
+if ($xClassFromEmSettings && __isT3LibDbXClassingActivated()) {
+		$GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['t3lib/class.t3lib_db.php'] = $xClassFromEmSettings;
 } else {
 	__includeXClassForCurrentT3Version();
 }
@@ -22,11 +22,13 @@ $TYPO3_CONF_VARS['SC_OPTIONS']['tslib/index_ts.php']['preprocessRequest'][] = 'E
 
 
 
-// Hooks for the t3lib_db calls
-if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_db.php']['queryProcessors'])) {
-	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_db.php']['queryProcessors'] = array();
+// Hooks for the t3lib_db calls (check whether x-classing is activated)
+if (__isT3LibDbXClassingActivated()) {
+	if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_db.php']['queryProcessors'])) {
+		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_db.php']['queryProcessors'] = array();
+	}
+	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_db.php']['queryProcessors'][] = 'EXT:sandstormmedia_plumber/Classes/Hooks/Hook.php:Tx_SandstormmediaPlumber_Hooks_Hook';
 }
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_db.php']['queryProcessors'][] = 'EXT:sandstormmedia_plumber/Classes/Hooks/Hook.php:Tx_SandstormmediaPlumber_Hooks_Hook';
 
 
 
@@ -82,6 +84,23 @@ function __getXClassFromEmSettings() {
 
 
 /**
+ * Returns TRUE, if x-classing for t3lib_DB is activated
+ *
+ * @return bool
+ */
+function __isT3LibDbXClassingActivated() {
+	$plumberEmSettings = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['sandstormmedia_plumber']);
+	if (!empty($plumberEmSettings['t3libDbXclassingActivated'])) {
+		if ($plumberEmSettings['t3libDbXclassingActivated']) {
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
+
+
+/**
  * Includes proper xclass for extending t3lib_DB
  */
 function __includeXClassForCurrentT3Version() {
@@ -99,5 +118,9 @@ function __includeXClassForCurrentT3Version() {
 		require_once(PATH_site . 't3lib/interfaces/interface.t3lib_db_postprocessqueryhook.php');
 		require_once(PATH_site . 't3lib/interfaces/interface.t3lib_db_preprocessqueryhook.php');
 	}
-	$GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['t3lib/class.t3lib_db.php'] = $xclass;
+
+	// Check whether x-classing is activated
+	if (__isT3LibDbXClassingActivated()) {
+		$GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['t3lib/class.t3lib_db.php'] = $xclass;
+	}
 }
