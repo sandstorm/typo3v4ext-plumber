@@ -40,6 +40,24 @@ require_once(PATH_site . 't3lib/class.t3lib_db.php');
  */
 class ux_t3lib_DB extends t3lib_DB {
 
+	/**
+	 * Holds hooks for pre-query processing
+	 *
+	 * @var array
+	 */
+	protected $preProcessHookObjects = array();
+
+
+
+	/**
+	 * Holds hooks for post-query processing
+	 *
+	 * @var array
+	 */
+	protected $postProcessHookObjects = array();
+
+
+
 	// Extending given methods to call the hooks
 
 
