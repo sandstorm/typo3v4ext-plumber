@@ -46,11 +46,19 @@ class Tx_SandstormmediaPlumber_TimeTrack {
 	public function __construct($run) {
 		$this->run = $run;
 
-		$this->additionalCallbacks = array(
-			'Process ID' => function($run) {
-				$run->setOption('beUserLoggedIn', ($GLOBALS['TSFE']->isBackendUserLoggedIn()?'TRUE' : 'FALSE'));
-			}
-		);
+		if (function_exists('t3lib_utility_VersionNumber::convertVersionNumberToInteger')) {
+			$t3version = t3lib_utility_VersionNumber::convertVersionNumberToInteger(TYPO3_version);
+		} else {
+			$t3version = t3lib_div::int_from_ver(TYPO3_version);
+		}
+
+		if ($t3version >= 4006000) {
+			$this->additionalCallbacks = array(
+				'Process ID' => function($run) {
+					$run->setOption('beUserLoggedIn', ($GLOBALS['TSFE']->isBackendUserLoggedIn()?'TRUE' : 'FALSE'));
+				}
+			);
+		}
 	}
 
 	/**

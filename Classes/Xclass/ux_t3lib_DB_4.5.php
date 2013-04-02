@@ -41,7 +41,7 @@ require_once(PATH_site . 't3lib/class.t3lib_db.php');
 class ux_t3lib_DB extends t3lib_DB {
 
 	/**
-	 * Holds hooks for pre-query processing
+	 * Holds hooks to be called before query processing
 	 *
 	 * @var array
 	 */
@@ -50,11 +50,48 @@ class ux_t3lib_DB extends t3lib_DB {
 
 
 	/**
-	 * Holds hooks for post-query processing
+	 * Holds hooks to be called after query processing
 	 *
 	 * @var array
 	 */
 	protected $postProcessHookObjects = array();
+
+
+
+	/**
+	 * Our own constructor, to enable instantiation of hook classes
+	 */
+	function __construct() {
+		// Prepare user defined objects (if any) for hooks which extend query methods
+		$this->preProcessHookObjects = array();
+		$this->postProcessHookObjects = array();
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_db.php']['queryProcessors'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_db.php']['queryProcessors'] as $classRef) {
+				$hookObject = t3lib_div::getUserObj($classRef);
+				if (!($hookObject instanceof t3lib_DB_preProcessQueryHook || $hookObject instanceof t3lib_DB_postProcessQueryHook)) {
+					throw new UnexpectedValueException('$hookObject must either implement interface t3lib_DB_preProcessQueryHook or interface t3lib_DB_postProcessQueryHook', 1299158548);
+				}
+				if ($hookObject instanceof t3lib_DB_preProcessQueryHook) {
+					$this->preProcessHookObjects[] = $hookObject;
+				}
+				if ($hookObject instanceof t3lib_DB_postProcessQueryHook) {
+					$this->postProcessHookObjects[] = $hookObject;
+				}
+			}
+		}
+
+		// We check, that we have our own interface that brings the hooks for select queries
+		foreach ($this->preProcessHookObjects as $preProcessHookObject) {
+			if (!$preProcessHookObject instanceof Tx_SandstormmediaPlumber_Hooks_DbPreProcessHookInterface) {
+				throw new Exception('The registered hook ' . get_class($preProcessHookObject) . ' must implement the interface Tx_SandstormmediaPlumber_Hooks_DbPreProcessHookInterface', 1363902554);
+			}
+		}
+		foreach ($this->postProcessHookObjects as $postProcessHookObject) {
+			if (!$preProcessHookObject instanceof Tx_SandstormmediaPlumber_Hooks_DbPreProcessHookInterface) {
+				throw new Exception('The registered hook ' . get_class($preProcessHookObject) . ' must implement the interface Tx_SandstormmediaPlumber_Hooks_DbPreProcessHookInterface', 1363902554);
+			}
+		}
+	}
 
 
 
@@ -232,55 +269,6 @@ class ux_t3lib_DB extends t3lib_DB {
 		}
 
 		return $res;
-	}
-
-
-
-	// Overwriting methods to set up the hook classes
-
-	/**
-	 * Connects to database for TYPO3 sites:
-	 *
-	 * @param string $host
-	 * @param string $user
-	 * @param string $password
-	 * @param string $db
-	 * @throws UnexpectedValueException
-	 * @throws Exception if a hook does not implement the required interface
-	 */
-	function connectDB($host = TYPO3_db_host, $user = TYPO3_db_username, $password = TYPO3_db_password, $db = TYPO3_db) {
-		parent::connectDB($host, $user, $password, $db);
-
-		// Prepare user defined objects (if any) for hooks which extend query methods
-		$this->preProcessHookObjects = array();
-		$this->postProcessHookObjects = array();
-		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_db.php']['queryProcessors'])) {
-			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_db.php']['queryProcessors'] as $classRef) {
-				$hookObject = t3lib_div::getUserObj($classRef);
-
-				if (!($hookObject instanceof t3lib_DB_preProcessQueryHook || $hookObject instanceof t3lib_DB_postProcessQueryHook)) {
-					throw new UnexpectedValueException('$hookObject must either implement interface t3lib_DB_preProcessQueryHook or interface t3lib_DB_postProcessQueryHook', 1299158548);
-				}
-				if ($hookObject instanceof t3lib_DB_preProcessQueryHook) {
-					$this->preProcessHookObjects[] = $hookObject;
-				}
-				if ($hookObject instanceof t3lib_DB_postProcessQueryHook) {
-					$this->postProcessHookObjects[] = $hookObject;
-				}
-			}
-		}
-
-		// We check, that we have our own interface that brings the hooks for select queries
-		foreach ($this->preProcessHookObjects as $preProcessHookObject) {
-			if (!$preProcessHookObject instanceof Tx_SandstormmediaPlumber_Hooks_DbPreProcessHookInterface) {
-				throw new Exception('The registered hook ' . get_class($preProcessHookObject) . ' must implement the interface Tx_SandstormmediaPlumber_Hooks_DbPreProcessHookInterface', 1363902554);
-			}
-		}
-		foreach ($this->postProcessHookObjects as $postProcessHookObject) {
-			if (!$preProcessHookObject instanceof Tx_SandstormmediaPlumber_Hooks_DbPreProcessHookInterface) {
-				throw new Exception('The registered hook ' . get_class($preProcessHookObject) . ' must implement the interface Tx_SandstormmediaPlumber_Hooks_DbPreProcessHookInterface', 1363902554);
-			}
-		}
 	}
 
 }
