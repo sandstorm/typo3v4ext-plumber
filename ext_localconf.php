@@ -40,6 +40,14 @@ $TYPO3_CONF_VARS['SC_OPTIONS']['tslib/class.tslib_fe.php']['hook_eofe'][] = 'EXT
 
 
 
+/**************************************************************************************************************
+ *
+ * Helper methods
+ *
+ **************************************************************************************************************/
+
+
+
 /**
  * Returns the current T3 version, as we have to include different xclasses depending on version
  * $t3version is a three part version number, eg '4.12.3' -> 4012003

@@ -37,7 +37,6 @@ require_once('DbPreProcessHookInterface.php');
  *
  * @author Sebastian Kurfürst
  * @author Michael Knoll <knoll@punkt.de>
- * @see
  */
 class Tx_SandstormmediaPlumber_Hooks_Hook implements t3lib_Singleton, Tx_SandstormmediaPlumber_Hooks_DbPreProcessHookInterface, Tx_SandstormmediaPlumber_Hooks_DbPostProcessHookInterface {
 
@@ -68,6 +67,34 @@ class Tx_SandstormmediaPlumber_Hooks_Hook implements t3lib_Singleton, Tx_Sandsto
 
 
 
+	/**
+	 * Holds an instance of t3lib_DB object
+	 *
+	 * @var t3lib_DB
+	 */
+	protected $dbObj;
+
+
+
+	/**
+	 * Holds current mysql process list as string. At the beginning, this is NULL. The first request
+	 * to be profiled will query this value and set it.
+	 *
+	 * @var string
+	 */
+	protected $processList = NULL;
+
+
+
+	/**
+	 * Holds number of MySQL processes
+	 *
+	 * @var int
+	 */
+	protected $numOfProcesses = 0;
+
+
+
 	public function __construct() {
 		$_extConfig = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['sandstormmedia_plumber']);
 		$samplingRate = 1;
@@ -85,6 +112,7 @@ class Tx_SandstormmediaPlumber_Hooks_Hook implements t3lib_Singleton, Tx_Sandsto
 
 			$this->run = new \Sandstorm\PhpProfiler\Domain\Model\EmptyProfilingRun();
 		}
+		$this->dbObj = $GLOBALS['TYPO3_DB'];
 	}
 
 
@@ -131,7 +159,8 @@ class Tx_SandstormmediaPlumber_Hooks_Hook implements t3lib_Singleton, Tx_Sandsto
 	 ************************************************************************************************************************/
 
 	public function INSERTquery_preProcessAction(&$table, array &$fieldsValues, &$noQuoteFields, t3lib_DB $parentObject) {
-		if ($this->run) $this->run->startTimer('DB: INSERT', array('Table' => $table, 'fields' => json_encode($fieldsValues)));
+		// TODO think about how we get actual query in here
+		if ($this->run) $this->run->startTimer('DB: INSERT', array('Query' => 'INSERT INTO ' . $table, 'Table' => $table, 'fields' => json_encode($fieldsValues)));
 	}
 
 
@@ -143,6 +172,7 @@ class Tx_SandstormmediaPlumber_Hooks_Hook implements t3lib_Singleton, Tx_Sandsto
 
 
 	public function INSERTmultipleRows_preProcessAction(&$table, array &$fields, array &$rows, &$noQuoteFields, t3lib_DB $parentObject) {
+		// TODO think about how we get actual query in here
 		if ($this->run) $this->run->startTimer('DB: INSERTmultipleRows', array('Table' => $table));
 	}
 
@@ -155,6 +185,7 @@ class Tx_SandstormmediaPlumber_Hooks_Hook implements t3lib_Singleton, Tx_Sandsto
 
 
 	public function UPDATEquery_preProcessAction(&$table, &$where, array &$fieldsValues, &$noQuoteFields, t3lib_DB $parentObject) {
+		// TODO think about how we get actual query in here
 		if ($this->run) $this->run->startTimer('DB: UPDATE', array('Table' => $table, 'where' => $where, 'fields' => json_encode($fieldsValues)));
 	}
 
@@ -167,6 +198,7 @@ class Tx_SandstormmediaPlumber_Hooks_Hook implements t3lib_Singleton, Tx_Sandsto
 
 
 	public function DELETEquery_preProcessAction(&$table, &$where, t3lib_DB $parentObject) {
+		// TODO think about how we get actual query in here
 		if ($this->run) $this->run->startTimer('DB: DELETE', array('Table' => $table));
 	}
 
@@ -179,6 +211,7 @@ class Tx_SandstormmediaPlumber_Hooks_Hook implements t3lib_Singleton, Tx_Sandsto
 
 
 	public function TRUNCATEquery_preProcessAction(&$table, t3lib_DB $parentObject) {
+		// TODO think about how we get actual query in here
 		if ($this->run) $this->run->startTimer('DB: TRUNCATE', array('Table' => $table));
 	}
 
@@ -191,13 +224,57 @@ class Tx_SandstormmediaPlumber_Hooks_Hook implements t3lib_Singleton, Tx_Sandsto
 
 
 	public function exec_SELECTquery_preProcessAction(&$select_fields, &$from_table, &$where_clause, &$groupBy, &$orderBy, &$limit, t3lib_DB $parentObject) {
-		if ($this->run) $this->run->startTimer('DB: SELECT', array('Query' => $parentObject->SELECTquery($select_fields, $from_table, $where_clause, $groupBy, $orderBy, $limit)));
+		if ($this->run) {
+
+			// Log some MySQL statistics -- IF NOT DONE YET
+			if ($this->processList === NULL) {
+				// TODO make this configurable in EM settings
+				$this->run->setOption('mysql_ProcessList', $this->getMySqlProcessList());
+				$this->run->setOption('mysql_Processes', print_r($this->numOfProcesses, true)); // If we set this as integer, it won't be displayed in frontend!
+				$this->run->setOption('mysql_Status', $this->getMySqlStatus());
+			}
+
+			// Log runtime of current query
+			$this->run->startTimer('DB: SELECT', array('Query' => $parentObject->SELECTquery($select_fields, $from_table, $where_clause, $groupBy, $orderBy, $limit)));
+
+		}
 	}
 
 
 
 	public function exec_SELECTquery_postProcessAction(&$select_fields, &$from_table, &$where_clause, &$groupBy, &$orderBy, &$limit, t3lib_DB $parentObject) {
 		if ($this->run) $this->run->stopTimer('DB: SELECT');
+	}
+
+
+
+	/************************************************************************************************************************
+	 * Private methods
+	 ************************************************************************************************************************/
+
+	private function getMySqlProcessList() {
+		$result = mysql_query('SHOW FULL PROCESSLIST', $this->dbObj->link);
+		$processList = '';
+		$numOfProcesses = 0;
+		while ($row = mysql_fetch_assoc($result)){
+			$processList .= sprintf("%s %s %s %s %s\n", $row["Id"], $row["Host"], $row["db"], $row["Command"], $row["Time"]);
+			$numOfProcesses++;
+		}
+		mysql_free_result($result);
+		$this->processList = $processList;
+		$this->numOfProcesses = $numOfProcesses;
+		return $processList;
+	}
+
+
+
+	private function getMySqlStatus() {
+		$result = mysql_query('SHOW STATUS', $this->dbObj->link);
+		$status = '';
+		while ($row = mysql_fetch_assoc($result)) {
+		    $status .= $row['Variable_name'] . ' = ' . $row['Value'] . "\n";
+		}
+		return $status;
 	}
 
 }
