@@ -63,7 +63,7 @@ function __getT3Version() {
 	}
 
 	if ($t3version < 4005000) { // We do not support T3 version < 4.5
-		throw new Exception('This extension can not be installed with a version prior to 4.5 of TYPO3!', 1364212859);
+		throw new Exception('This extension can not be used with a version prior to 4.5 of TYPO3!', 1364212859);
 	}
 
 	return $t3version;
@@ -119,8 +119,14 @@ function __includeXClassForCurrentT3Version() {
 		// Inclusion of required interfaces (those are not available in v 4.5)
 		require_once( t3lib_extMgm::extPath('sandstormmedia_plumber') . 'Classes/Hooks/v4.5Compatibility/interface.t3lib_db_postprocessqueryhook.php');
 		require_once( t3lib_extMgm::extPath('sandstormmedia_plumber') . 'Classes/Hooks/v4.5Compatibility/interface.t3lib_db_preprocessqueryhook.php');
-	} else {   // Version >= 4.6
+	} elseif ($t3version < 4007000) {   // Version < 4.7
 		$xclass = t3lib_extMgm::extPath('sandstormmedia_plumber') . 'Classes/Xclass/ux_t3lib_DB_4.6.php';
+
+		// Inclusion of required interfaces (we probably have no auto-loading)
+		require_once(PATH_site . 't3lib/interfaces/interface.t3lib_db_postprocessqueryhook.php');
+		require_once(PATH_site . 't3lib/interfaces/interface.t3lib_db_preprocessqueryhook.php');
+	} else {	// Version >= 4.7
+		$xclass = t3lib_extMgm::extPath('sandstormmedia_plumber') . 'Classes/Xclass/ux_t3lib_DB_4.7.php';
 
 		// Inclusion of required interfaces (we probably have no auto-loading)
 		require_once(PATH_site . 't3lib/interfaces/interface.t3lib_db_postprocessqueryhook.php');

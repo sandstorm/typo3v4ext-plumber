@@ -30,7 +30,7 @@ require_once(PATH_site . 't3lib/class.t3lib_db.php');
 
 
 /**
- * Class implements xclassing for t3lib_DB for TYPO3 version 4.6.
+ * Class implements xclassing for t3lib_DB for TYPO3 version 4.7.
  *
  * This class enables profiling of sql SELECT queries which is not possible with the standard hooks
  * in t3lib_DB of TYPO3.

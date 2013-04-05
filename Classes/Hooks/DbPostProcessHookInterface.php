@@ -47,4 +47,14 @@ interface Tx_SandstormmediaPlumber_Hooks_DbPostProcessHookInterface extends t3li
 	 */
 	public function exec_SELECTquery_postProcessAction(&$select_fields, &$from_table, &$where_clause, &$groupBy, &$orderBy, &$limit, t3lib_DB $parentObject);
 
+
+
+	/**
+	 * Post-processor for the sql_query method.
+	 *
+	 * @param string $query Query to be executed
+	 * @return void
+	 */
+	public function sql_query_postProcessAction($query);
+
 }

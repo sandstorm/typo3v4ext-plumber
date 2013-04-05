@@ -12,10 +12,10 @@
 
 $EM_CONF[$_EXTKEY] = array(
 	'title' => 'Sandstorm Media Plumber Connector',
-	'description' => '',
+	'description' => 'TYPO3 Profiling Extension',
 	'category' => '',
-	'author' => 'Sebastian Kurfürst',
-	'author_email' => 'sebastian.kurfuerst@sandstorm-media.de',
+	'author' => 'Sebastian Kurfürst, Michael Knoll',
+	'author_email' => 'sebastian.kurfuerst@sandstorm-media.de, knoll@punkt.de',
 	'shy' => '',
 	'dependencies' => '',
 	'conflicts' => '',
@@ -29,9 +29,11 @@ $EM_CONF[$_EXTKEY] = array(
 	'clearCacheOnLoad' => 0,
 	'lockType' => '',
 	'author_company' => '',
-	'version' => '0.0.0',
+	'version' => '0.0.0-dev',
 	'constraints' => array(
 		'depends' => array(
+			'php' => '5.3.0-0.0.0',
+			'typo3' => '4.7.0-0.0.0',
 		),
 		'conflicts' => array(
 		),
@@ -40,5 +42,3 @@ $EM_CONF[$_EXTKEY] = array(
 	),
 	'_md5_values_when_last_written' => 'a:5:{s:9:"ChangeLog";s:4:"ee6e";s:10:"README.txt";s:4:"ee2d";s:12:"ext_icon.gif";s:4:"1bdc";s:19:"doc/wizard_form.dat";s:4:"0c90";s:20:"doc/wizard_form.html";s:4:"8f9b";}',
 );
-
-?>

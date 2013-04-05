@@ -271,4 +271,31 @@ class ux_t3lib_DB extends t3lib_DB {
 		return $res;
 	}
 
+
+
+	/**
+	 * Executes query
+	 * mysql_query() wrapper function
+	 * Beware: Use of this method should be avoided as it is experimentally supported by DBAL. You should consider
+	 *         using exec_SELECTquery() and similar methods instead.
+	 *
+	 * @param	string		Query to execute
+	 * @return	pointer		Result pointer / DBAL object
+	 */
+	function sql_query($query) {
+		// Added to log select queries
+		foreach($this->preProcessHookObjects as $preProcessHookObject) { /* @var $preProcessHookObject Tx_SandstormmediaPlumber_Hooks_DbPreProcessHookInterface */
+			$preProcessHookObject->sql_query_preProcessAction($query);
+		}
+
+		$pointer = parent::sql_query($query);
+
+		// Added to log select queries
+		foreach($this->postProcessHookObjects as $postProcessHookObject) { /* @var $postProcessHookObject Tx_SandstormmediaPlumber_Hooks_DbPostProcessHookInterface */
+			$postProcessHookObject->sql_query_postProcessAction($query);
+		}
+
+		return $pointer;
+	}
+
 }

@@ -238,6 +238,18 @@ class Tx_SandstormmediaPlumber_Hooks_Hook implements t3lib_Singleton, Tx_Sandsto
 
 
 
+	public function sql_query_postProcessAction($query) {
+		if ($this->run) $this->run->startTimer('DB: SELECT', array('Query' => $query));
+	}
+
+
+
+	public function sql_query_preProcessAction($query) {
+		if ($this->run) $this->run->stopTimer('DB: SELECT');
+	}
+
+
+
 	/************************************************************************************************************************
 	 * Private methods
 	 ************************************************************************************************************************/
@@ -262,9 +274,8 @@ class Tx_SandstormmediaPlumber_Hooks_Hook implements t3lib_Singleton, Tx_Sandsto
 		$result = mysql_query('SHOW STATUS', $GLOBALS['TYPO3_DB']->link);
 		$status = '';
 		while ($row = mysql_fetch_assoc($result)) {
-		    $status .= $row['Variable_name'] . ' = ' . $row['Value'] . "\n";
+			$status .= $row['Variable_name'] . ' = ' . $row['Value'] . "\n";
 		}
 		return $status;
 	}
-
 }

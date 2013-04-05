@@ -47,4 +47,14 @@ interface Tx_SandstormmediaPlumber_Hooks_DbPreProcessHookInterface extends t3lib
 	 */
 	public function exec_SELECTquery_preProcessAction(&$select_fields, &$from_table, &$where_clause, &$groupBy, &$orderBy, &$limit, t3lib_DB $parentObject);
 
+
+
+	/**
+	 * Pre-processor for the sql_query method.
+	 *
+	 * @param string $query Query to be executed
+	 * @return void
+	 */
+	public function sql_query_preProcessAction($query);
+
 }
