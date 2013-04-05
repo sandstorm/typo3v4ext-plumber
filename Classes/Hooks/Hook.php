@@ -68,15 +68,6 @@ class Tx_SandstormmediaPlumber_Hooks_Hook implements t3lib_Singleton, Tx_Sandsto
 
 
 	/**
-	 * Holds an instance of t3lib_DB object
-	 *
-	 * @var t3lib_DB
-	 */
-	protected $dbObj;
-
-
-
-	/**
 	 * Holds current mysql process list as string. At the beginning, this is NULL. The first request
 	 * to be profiled will query this value and set it.
 	 *
@@ -112,7 +103,6 @@ class Tx_SandstormmediaPlumber_Hooks_Hook implements t3lib_Singleton, Tx_Sandsto
 
 			$this->run = new \Sandstorm\PhpProfiler\Domain\Model\EmptyProfilingRun();
 		}
-		$this->dbObj = $GLOBALS['TYPO3_DB'];
 	}
 
 
@@ -253,7 +243,7 @@ class Tx_SandstormmediaPlumber_Hooks_Hook implements t3lib_Singleton, Tx_Sandsto
 	 ************************************************************************************************************************/
 
 	private function getMySqlProcessList() {
-		$result = mysql_query('SHOW FULL PROCESSLIST', $this->dbObj->link);
+		$result = mysql_query('SHOW FULL PROCESSLIST', $GLOBALS['TYPO3_DB']->link);
 		$processList = '';
 		$numOfProcesses = 0;
 		while ($row = mysql_fetch_assoc($result)){
@@ -269,7 +259,7 @@ class Tx_SandstormmediaPlumber_Hooks_Hook implements t3lib_Singleton, Tx_Sandsto
 
 
 	private function getMySqlStatus() {
-		$result = mysql_query('SHOW STATUS', $this->dbObj->link);
+		$result = mysql_query('SHOW STATUS', $GLOBALS['TYPO3_DB']->link);
 		$status = '';
 		while ($row = mysql_fetch_assoc($result)) {
 		    $status .= $row['Variable_name'] . ' = ' . $row['Value'] . "\n";
