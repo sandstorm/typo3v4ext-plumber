@@ -247,7 +247,7 @@ class Tx_SandstormmediaPlumber_Hooks_Hook implements t3lib_Singleton, Tx_Sandsto
 		$processList = '';
 		$numOfProcesses = 0;
 		while ($row = mysql_fetch_assoc($result)){
-			$processList .= sprintf("%s %s %s %s %s\n", $row["Id"], $row["Host"], $row["db"], $row["Command"], $row["Time"]);
+			$processList .= sprintf("%s %s %s %s %s %s\n", $row["Id"], $row["Host"], $row["db"], $row["Command"], $row["Time"], $row["Info"]);
 			$numOfProcesses++;
 		}
 		mysql_free_result($result);
