@@ -134,7 +134,7 @@ class ProfilingRun extends EmptyProfilingRun {
 		$this->timestamps = array();
 		$this->startTime = microtime(TRUE);
 		if (function_exists('xhprof_enable')) {
-			xhprof_enable();
+			xhprof_enable(XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY);
 		}
 		$this->startTimer('Profiling Run');
 	}
