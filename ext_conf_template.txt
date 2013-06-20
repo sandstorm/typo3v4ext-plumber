@@ -9,3 +9,15 @@ t3libDbXclassingActivated = 0
 
 # cat=basic/profiler; type=string; label=Name of xclass to replace t3lib/class.t3lib_db.php. If empty, no xclass will be used. EXT_KEY__TWO COLONS__path/inside/extension to specify the path;
 t3libDbXclass =
+
+# cat=basic/flags/1; type=boolean; label=Use the XHPROF_FLAGS_NO_BUILTINS flag
+XHPROF_FLAGS_NO_BUILTINS = 0
+
+# cat=basic/flags/2; type=boolean; label=Use the XHPROF_FLAGS_CPU flag
+XHPROF_FLAGS_CPU = 1
+
+# cat=basic/flags/4; type=boolean; label=Use the XHPROF_FLAGS_MEMORY flag
+XHPROF_FLAGS_MEMORY = 1
+
+# cat=basic/profiler; type=string; label=Comma-separated list of internal functions to be ignored by profiler
+ignoredInternalFunctions =
