@@ -1,0 +1,3 @@
+[submodule "Resources/Private/PHP/PhpProfiler"]
+	path = Resources/Private/PHP/PhpProfiler
+	url = git@github.com:punktDe/PhpProfiler.git
