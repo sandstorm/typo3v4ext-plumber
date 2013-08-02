@@ -41,15 +41,6 @@ require_once('DbPreProcessHookInterface.php');
 class Tx_SandstormmediaPlumber_Hooks_Hook implements t3lib_Singleton, Tx_SandstormmediaPlumber_Hooks_DbPreProcessHookInterface, Tx_SandstormmediaPlumber_Hooks_DbPostProcessHookInterface {
 
 	/**
-	 * Directory into which profiling logs should be written.
-	 *
-	 * @var string
-	 */
-	protected $profileDirectory;
-
-
-
-	/**
 	 * Instance of profiler
 	 *
 	 * @var \Sandstorm\PhpProfiler\Profiler
@@ -88,6 +79,7 @@ class Tx_SandstormmediaPlumber_Hooks_Hook implements t3lib_Singleton, Tx_Sandsto
 
 	public function __construct() {
 		$_extConfig = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['sandstormmedia_plumber']);
+
 		$samplingRate = 1;
 		if (isset($_extConfig['samplingRate'])) {
 			$samplingRate = floatval($_extConfig['samplingRate']);
@@ -96,11 +88,13 @@ class Tx_SandstormmediaPlumber_Hooks_Hook implements t3lib_Singleton, Tx_Sandsto
 		$currentSampleValue = mt_rand() / mt_getrandmax();
 
 		if (isset($_extConfig['profileDirectory']) && $currentSampleValue <= $samplingRate) {
-			$this->profileDirectory = $_extConfig['profileDirectory'];
+			require_once(__DIR__ . '/../../Resources/Private/PHP/PhpProfiler/main.php');
+			require_once(__DIR__ . '/../TimeTrack.php');
 
-			$mainIncludeFile = __DIR__ . '/../../Resources/Private/PHP/PhpProfiler/main.php';
-			require_once($mainIncludeFile);
-
+			$this->profiler = \Sandstorm\PhpProfiler\Profiler::getInstance();
+			$this->profiler->setConfigurationProvider(function() use ($_extConfig) {
+				return array('plumber' => array('profilePath' => $_extConfig['profileDirectory']));
+			});
 			$this->run = new \Sandstorm\PhpProfiler\Domain\Model\EmptyProfilingRun();
 		}
 	}
@@ -114,14 +108,9 @@ class Tx_SandstormmediaPlumber_Hooks_Hook implements t3lib_Singleton, Tx_Sandsto
 	 */
 	public function preprocessRequest() {
 		if ($this->run) {
-			$profiler = \Sandstorm\PhpProfiler\Profiler::getInstance();
-			$profiler->setConfiguration('profilePath', $this->profileDirectory);
-			$this->profiler = $profiler;
-			$this->run = $profiler->start();
-
+			$this->run = $this->profiler->start();
 			$this->run->setOption('requestUri', t3lib_div::getIndpEnv('REQUEST_URI'));
 
-			require_once(__DIR__ . '/../TimeTrack.php');
 			$GLOBALS['TT'] = new Tx_SandstormmediaPlumber_TimeTrack($this->run);
 		}
 	}
